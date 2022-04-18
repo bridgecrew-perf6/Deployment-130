@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+  name: my-project
+  labels:
+    app: my-project
+spec:
+  type: NodePort
+  ports:
+  - port: 8000
+    name: my-project
+    targetPort: 8000
+  selector:
+    app: my-project
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-project
+  labels:
+    app: my-project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-project
+  template:
+    metadata:
+      labels:
+        app: my-project
+    spec:
+      containers:
+      - name: my-project
+        image: image_url
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: special-config
+
